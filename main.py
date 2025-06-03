@@ -1,6 +1,9 @@
 import pyttsx3
 import PyPDF2
+import argparse # to handle command line arguments
 import sys
+import os
+from pathlib import Path # to handle file paths
 
 if len(sys.argv) > 1:
     book = sys.argv[1]
@@ -48,17 +51,38 @@ def speak_text(text, rate=200, volume=0.9):
     except Exception as e:
         print(f"Error during speech synthesis: {e}")
 
-def main():
-    
-    return
+#Save the text to an audio file
+def save_audio(text, output_path, rate=200, volume=0.9):
 
+    try:
+        engine = pyttsx3.init()
+        
+        # Set speech rate and volume
+        engine.setProperty('rate', rate)
+        engine.setProperty('volume', volume)
+        
+        print(f"Saving audio to '{output_path}'...") # print message to console
+        engine.save_to_file(text, output_path)
+        engine.runAndWait()
+        print(f"Audio saved successfully to '{output_path}'") 
+        
+    except Exception as e:
+        print(f"Error saving audio: {e}")
+
+#create output file name
+def get_output_filename(pdf_path, custom_name=None):
+    if custom_name: # if a custom name is provided
+        if not custom_name.endswith(('.mp3', '.wav')):
+            custom_name += '.mp3'
+        return custom_name
+    
+    pdf_name = Path(pdf_path).stem # get name of the pdf file
+    return f"{pdf_name}_audio.mp3"
+
+
+def main():
+    return
 
 # main execution
 if __name__ == "__main__":
-    reaed_text = read_pdf(book)
-    if reaed_text:
-        speak(reaed_text)
-    else:
-        speak("The PDF file is empty or could not be read.")
-    
-    
+    main()
