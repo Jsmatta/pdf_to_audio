@@ -80,8 +80,91 @@ def get_output_filename(pdf_path, custom_name=None):
     return f"{pdf_name}_audio.mp3"
 
 
+
 def main():
-    return
+    parser = argparse.ArgumentParser(
+        description="Convert PDF files to audio using text-to-speech",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+    Examples:
+    %(prog)s document.pdf                    # Play audio directly
+    %(prog)s document.pdf -a                 # Play audio (explicit)
+    %(prog)s document.pdf -s                 # Save as MP3
+    %(prog)s document.pdf -s -o my_book.mp3  # Save with custom name
+    %(prog)s document.pdf -r 150 -v 0.8      # Custom rate and volume
+        """
+    )
+        # arguments for the command line
+    parser.add_argument('pdf_file', 
+                        help='Path to the PDF file to convert')
+
+    parser.add_argument('-a', '--audio', 
+                        action='store_true',
+                        help='Play the audio directly (default behavior)')
+
+    parser.add_argument('-s', '--save', 
+                        action='store_true',
+                        help='Save the audio as an MP3 file')
+
+    parser.add_argument('-o', '--output', 
+                        type=str,
+                        help='Output filename for saved audio (used with -s)')
+
+    parser.add_argument('-r', '--rate', 
+                        type=int, 
+                        default=200,
+                        help='Speech rate (words per minute, default: 200)')
+
+    parser.add_argument('-v', '--volume', 
+                        type=float, 
+                        default=0.9,
+                        help='Volume level (0.0 to 1.0, default: 0.9)')
+
+    parser.add_argument('--preview', 
+                        action='store_true',
+                        help='Show first 500 characters of extracted text')
+
+    args = parser.parse_args()
+
+    # Validate PDF file exists
+    if not os.path.isfile(args.pdf_file):
+        print(f"Error: PDF file '{args.pdf_file}' does not exist.")
+        sys.exit(1)
+
+    # Validate volume range
+    if not 0.0 <= args.volume <= 1.0:
+        print("Error: Volume must be between 0.0 and 1.0")
+        sys.exit(1)
+
+    # Read PDF content
+    print(f"Reading PDF: {args.pdf_file}")
+    text = read_pdf(args.pdf_file)
+
+    if not text:
+        print("Error: The PDF file is empty or could not be read.")
+        sys.exit(1)
+
+    print(f"Successfully extracted {len(text)} characters from PDF.")
+
+    # Show preview if requested
+    if args.preview:
+        preview_text = text[:500] + "..." if len(text) > 500 else text
+        print(f"\nPreview of extracted text:\n{'-'*50}")
+        print(preview_text)
+        print(f"{'-'*50}\n")
+
+    # Default behavior: play audio if no specific action is specified
+    if not args.save:
+        args.audio = True
+
+    # Save audio to file
+    if args.save:
+        output_file = get_output_filename(args.pdf_file, args.output)
+        save_audio(text, output_file, args.rate, args.volume)
+
+    # Play audio
+    if args.audio:
+        speak_text(text, args.rate, args.volume)
 
 # main execution
 if __name__ == "__main__":
