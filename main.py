@@ -30,11 +30,29 @@ def read_pdf(file_path):
         return None
 
 # text to speech function
-def speak(text):
-    engine = pyttsx3.init()
-    engine.say(text)
-    engine.runAndWait()
+def speak_text(text, rate=200, volume=0.9):
+    try:
+        engine = pyttsx3.init() # initialize the text to speech engine
+        
+        # Set speech rate and volume
+        engine.setProperty('rate', rate) # speech speed 
+        engine.setProperty('volume', volume) # speech volume
+        
+        print("Playing audio...") # print message to console
+        engine.say(text)
+        
+        # wait for the audio to finish
+        engine.runAndWait() 
+        print("Audio playback completed.")
+    #error message if text is not playable
+    except Exception as e:
+        print(f"Error during speech synthesis: {e}")
+
+def main():
     
+    return
+
+
 # main execution
 if __name__ == "__main__":
     reaed_text = read_pdf(book)
