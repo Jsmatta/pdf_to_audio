@@ -1,10 +1,10 @@
-import pyttsx3
 import PyPDF2
+from gtts import gTTS
 import argparse # to handle command line arguments
 import sys
 import os
 from pathlib import Path # to handle file paths
-from gtts import gTTS
+import pyttsx3
 
 if len(sys.argv) > 1:
     book = sys.argv[1]
@@ -36,19 +36,19 @@ def read_pdf(file_path):
 # text to speech function
 def speak_text(text, rate=200, volume=0.9):
     try:
-        engine = pyttsx3.init() # initialize the text to speech engine
+        engine = pyttsx3.init()
         
         # Set speech rate and volume
-        engine.setProperty('rate', rate) # speech speed 
-        engine.setProperty('volume', volume) # speech volume
+        engine.setProperty('rate', rate)
+        engine.setProperty('volume', volume)
         
-        print("Playing audio...") # print message to console
+        print("Playing audio...")
         engine.say(text)
         
-        # wait for the audio to finish
-        engine.runAndWait() 
+        # Ensure the engine waits for the task to complete
+        engine.runAndWait()
+        
         print("Audio playback completed.")
-    #error message if text is not playable
     except Exception as e:
         print(f"Error during speech synthesis: {e}")
 
@@ -65,13 +65,11 @@ def save_audio(text, output_path, rate=200, volume=0.9):
 def get_output_filename(pdf_path, custom_name=None):
     if custom_name:
         if not custom_name.endswith(('.mp3', '.wav')):
-            custom_name += '.wav'  # Default to .wav
+            custom_name += '.mp3'  # Default to .wav
         return custom_name
     
     pdf_name = Path(pdf_path).stem
-    return f"{pdf_name}_audio.wav"  # Default to .wav
-
-
+    return f"{pdf_name}_audio.mp3"  # Default to .wav
 
 def main():
     parser = argparse.ArgumentParser(
