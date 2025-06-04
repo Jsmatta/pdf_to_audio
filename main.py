@@ -4,6 +4,7 @@ import argparse # to handle command line arguments
 import sys
 import os
 from pathlib import Path # to handle file paths
+from gtts import gTTS
 
 if len(sys.argv) > 1:
     book = sys.argv[1]
@@ -53,31 +54,22 @@ def speak_text(text, rate=200, volume=0.9):
 
 #Save the text to an audio file
 def save_audio(text, output_path, rate=200, volume=0.9):
-
     try:
-        engine = pyttsx3.init()
-        
-        # Set speech rate and volume
-        engine.setProperty('rate', rate)
-        engine.setProperty('volume', volume)
-        
-        print(f"Saving audio to '{output_path}'...") # print message to console
-        engine.save_to_file(text, output_path)
-        engine.runAndWait()
-        print(f"Audio saved successfully to '{output_path}'") 
-        
+        tts = gTTS(text)
+        tts.save(output_path)
+        print(f"Audio saved successfully to '{output_path}'")
     except Exception as e:
-        print(f"Error saving audio: {e}")
+        print(f"Error saving audio with gTTS: {e}")
 
 #create output file name
 def get_output_filename(pdf_path, custom_name=None):
-    if custom_name: # if a custom name is provided
+    if custom_name:
         if not custom_name.endswith(('.mp3', '.wav')):
-            custom_name += '.mp3'
+            custom_name += '.wav'  # Default to .wav
         return custom_name
     
-    pdf_name = Path(pdf_path).stem # get name of the pdf file
-    return f"{pdf_name}_audio.mp3"
+    pdf_name = Path(pdf_path).stem
+    return f"{pdf_name}_audio.wav"  # Default to .wav
 
 
 

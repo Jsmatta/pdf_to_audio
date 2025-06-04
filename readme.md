@@ -14,6 +14,6 @@ It takes arguments in the terminal to determine what happens to the files.
 ```
 
 The program utilizes the libraries:
-- [pyttsx3](https://pypi.org/project/pyttsx3/) For the text to speech
+- [GTTS](https://pypi.org/project/gTTS/) For the text to speech
 - [PyPDF2](https://pypi.org/project/PyPDF2/) To read the contents of the pdf file.
 - [pathlib](https://docs.python.org/3/library/pathlib.html) to Handle the file paths 
